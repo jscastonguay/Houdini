@@ -36,9 +36,23 @@ struct _MockInfo {
 typedef struct _MockInfo MockInfo;
 static MockInfo * mockInfoHead = NULL;
 
-  
+
+static void MockInfo_initList() {
+  MockInfo * mi = mockInfoHead;
+	while (mi) {
+		mi->nbCalls = 0;
+		mi->nbCallsTarget = 0;    
+    mi = mi->next;
+	}
+}
+
+
 static void MockInfo_addToList(MockInfo * toAdd) {
 	int stop = 0;
+  
+  toAdd->nbCalls = 0;
+  toAdd->nbCallsTarget = 0;
+  
 	MockInfo * mi = mockInfoHead;
 	if (mi == NULL) {
 		// List empty, add MockInfo to it.
@@ -54,16 +68,6 @@ static void MockInfo_addToList(MockInfo * toAdd) {
 			mi->next = toAdd;
 			stop = 1;
 		}
-		mi = mi->next;
-	}
-}
-
-
-static void MockInfo_initList() {
-	MockInfo * mi = mockInfoHead;
-	while (mi) {
-		mi->nbCalls = 0;
-		mi->nbCallsTarget = 0;
 		mi = mi->next;
 	}
 }
