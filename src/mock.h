@@ -27,14 +27,14 @@ SOFTWARE.
 
 #include "test.h"
 
-  struct _MockInfo {
-    int nbCalls;
-    int nbCallsTarget;
-    char * funcName;
-    struct _MockInfo * next;
-  };
-  typedef struct _MockInfo MockInfo;
-  static MockInfo * mockInfoHead = NULL;
+struct _MockInfo {
+  int nbCalls;
+  int nbCallsTarget;
+  char * funcName;
+  struct _MockInfo * next;
+};
+typedef struct _MockInfo MockInfo;
+static MockInfo * mockInfoHead = NULL;
 
   
 static void MockInfo_addToList(MockInfo * toAdd) {
@@ -73,7 +73,7 @@ static void MockInfo_testList( unsigned int lineNb) {
 	MockInfo * mi = mockInfoHead;
 	while (mi) {
 		if(mi->nbCalls != mi->nbCallsTarget) {
-			PRINT("ERROR at ");
+			PRINT(PREFIX "ERROR at ");
 			PRINT_INT(lineNb);
 			PRINT(" in substitution function ");
 			PRINT(mi->funcName);
@@ -81,7 +81,7 @@ static void MockInfo_testList( unsigned int lineNb) {
 			PRINT_INT(mi->nbCalls);
 			PRINT(", target = ");
 			PRINT_INT(mi->nbCallsTarget);
-			PRINT("\n\r");
+			PRINT(".\n\r");
 		}
 		mi = mi->next;
 	}
@@ -110,23 +110,23 @@ static void test_##testName() { \
 
 #define RUN_TEST(testName) test_##testName()
 
-static void fatalError(void) {
-  PRINT("FATAL ERROR: a mock function has not been substitute. Stop test.\n\r");
-  while (1) {;}
-}
 
 #define CREATE_MOCK_0(retType, name) \
 typedef struct { \
 	MockInfo parent; \
 	retType (*cb)(); \
 } MockInfo_##name; \
+retType name##_notUsed; \
 MockInfo_##name name##_mi = {.parent.next = NULL, .parent.nbCallsTarget = 0, .parent.nbCalls = 0, .parent.funcName = "", .cb = NULL}; \
 retType name() { \
 	name##_mi.parent.nbCalls++; \
-	if (name##_mi.cb == NULL) { \
-		fatalError(); \
-	} \
-  return name##_mi.cb(); \
+	if (name##_mi.cb != NULL) { \
+		return name##_mi.cb(); \
+	}else { \
+    PRINT(PREFIX "ERROR: A mock function has been called without a corresponding substitute function.\n\r"); \
+    FLUSH(); \
+    return name##_notUsed; \
+  } \
 }
 
 #define CREATE_MOCK_1(retType, name, p1Type) \
@@ -134,42 +134,17 @@ typedef struct { \
 	MockInfo parent; \
 	retType (*cb)(); \
 } MockInfo_##name; \
+retType name##_notUsed; \
 MockInfo_##name name##_mi = {.parent.next = NULL, .parent.nbCallsTarget = 0, .parent.nbCalls = 0, .parent.funcName = "", .cb = NULL}; \
 retType name(p1Type p1) { \
 	name##_mi.parent.nbCalls++; \
-	if (name##_mi.cb == NULL) { \
-		fatalError(); \
-	} \
-  return name##_mi.cb(p1); \
+	if (name##_mi.cb != NULL) { \
+		return name##_mi.cb(p1); \
+	} else { \
+    PRINT(PREFIX "ERROR: A mock function has been called without a corresponding substitute function.\n\r"); \
+    FLUSH(); \
+    return name##_notUsed; \
+  } \
 }
-
-/*
-#define CREATE_MOCK_V1(funcName, p1Type) \
-typedef struct { \
-	MockInfo parent; \
-	void (*cb)(p1Type); \
-} MockInfo_##funcName; \
-MockInfo_##funcName funcName##_mi = {.parent.next = NULL, .parent.nbCallsTarget = 0, .parent.nbCalls = 0, .parent.funcName = "", .cb = NULL}; \
-  void funcName(p1Type p1) { \
-	funcName##_mi.parent.nbCalls++; \
-	if (funcName##_mi.cb) { \
-		funcName##_mi.cb(p1); \
-	} \
-}
-
-
-#define CREATE_MOCK_1(retType, funcName, p1Type) \
-typedef struct { \
-	MockInfo parent; \
-	retType (*cb)(p1Type); \
-} MockInfo_##funcName; \
-MockInfo_##funcName funcName##_mi = {.parent.next = NULL, .parent.nbCallsTarget = 0, .parent.nbCalls = 0, .parent.funcName = "", .cb = NULL}; \
-  retType funcName(p1Type p1) { \
-	funcName##_mi.parent.nbCalls++; \
-	if (funcName##_mi.cb) { \
-		return funcName##_mi.cb(p1); \
-	} \
-}
-*/
 
 #endif
