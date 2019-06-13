@@ -27,8 +27,11 @@ SOFTWARE.
 
 #include <stdio.h>
 
- // Must be redefined in your system if required. 
-#define PRINTF(f_, ...) printf((f_), __VA_ARGS__) 
-#define ASSERT(eval) if (!(test)) { PRINTF("ERROR (#test) in %s at line %d", __FILE__, __LINE__); }
+// Can be redefined in your system if required. mock.h uses PRINT macro
+// but without variable arguments. You can redefine it as simple as a "write
+// string" function. However, mock.h uses PRINT_INT.
+#define PRINT(text) printf(text)
+#define PRINT_INT(nb) printf("%d", nb);
+#define ASSERT(test) if (!(test)) { PRINT("ERROR ("); PRINT(#test); PRINT(") in "); PRINT(__FILE__); PRINT(" at line "); PRINT_INT(__LINE__); PRINT("\n\r"); }
 
 #endif

@@ -27,14 +27,14 @@ SOFTWARE.
 
 #include "test.h"
 
-#define CREATE_TEST \
-  typedef struct MockInfo { \
-    int nbCalls; \
-    int nbCallsTarget; \
-    char * funcName; \
-    MockInfo * next; \
-  } MockInfo; \
-  MockInfo * mockInfoHead = NULL
+  struct _MockInfo {
+    int nbCalls;
+    int nbCallsTarget;
+    char * funcName;
+    struct _MockInfo * next;
+  };
+  typedef struct _MockInfo MockInfo;
+  static MockInfo * mockInfoHead = NULL;
 
   
 static void MockInfo_addToList(MockInfo * toAdd) {
@@ -62,8 +62,8 @@ static void MockInfo_addToList(MockInfo * toAdd) {
 static void MockInfo_initList() {
 	MockInfo * mi = mockInfoHead;
 	while (mi) {
-		mi.nbCalls = 0;
-		mi.nbCallsTarget = 0;
+		mi->nbCalls = 0;
+		mi->nbCallsTarget = 0;
 		mi = mi->next;
 	}
 }
@@ -74,17 +74,87 @@ static void MockInfo_testList( unsigned int lineNb) {
 	while (mi) {
 		if(mi->nbCalls != mi->nbCallsTarget) {
 			PRINT("ERROR at ");
-			PRINT(lineNb);
+			PRINT_INT(lineNb);
 			PRINT(" in substitution function ");
 			PRINT(mi->funcName);
 			PRINT(": nb calls = ");
-			PRINT(mi->nbCalls);
+			PRINT_INT(mi->nbCalls);
 			PRINT(", target = ");
-			PRINT(mi->nbCallsTarget);
+			PRINT_INT(mi->nbCallsTarget);
 			PRINT("\n\r");
 		}
 		mi = mi->next;
 	}
+}
+
+
+#define CALLING_INDEX(funNameUnderTest)  (funNameUnderTest##_mi.parent.nbCalls - 1)
+
+
+#define SUB(funNameUnderTest, funNameSubstitue, _nbCalls) \
+	MockInfo_addToList((MockInfo *)&funNameUnderTest##_mi); \
+	funNameUnderTest##_mi.cb = funNameSubstitue; \
+	funNameUnderTest##_mi.parent.nbCallsTarget = _nbCalls; \
+	funNameUnderTest##_mi.parent.funcName = #funNameSubstitue;
+
+
+#define TEST(testName) \
+static void test_##testName() { \
+	MockInfo_initList(); \
+  PRINT(#testName); \
+  PRINT("\n\r");
+  
+  
+#define END_TEST MockInfo_testList(__LINE__); }
+
+
+#define RUN_TEST(testName) test_##testName()
+
+static void fatalError(void) {
+  PRINT("FATAL ERROR: a mock function has not been substitute. Stop test.\n\r");
+  while (1) {;}
+}
+
+#define CREATE_MOCK_0(retType, name) \
+typedef struct { \
+	MockInfo parent; \
+	retType (*cb)(); \
+} MockInfo_##name; \
+MockInfo_##name name##_mi = {.parent.next = NULL, .parent.nbCallsTarget = 0, .parent.nbCalls = 0, .parent.funcName = "", .cb = NULL}; \
+retType name() { \
+	name##_mi.parent.nbCalls++; \
+	if (name##_mi.cb == NULL) { \
+		fatalError(); \
+	} \
+  return name##_mi.cb(); \
+}
+
+#define CREATE_MOCK_1(retType, name, p1Type) \
+typedef struct { \
+	MockInfo parent; \
+	retType (*cb)(); \
+} MockInfo_##name; \
+MockInfo_##name name##_mi = {.parent.next = NULL, .parent.nbCallsTarget = 0, .parent.nbCalls = 0, .parent.funcName = "", .cb = NULL}; \
+retType name(p1Type p1) { \
+	name##_mi.parent.nbCalls++; \
+	if (name##_mi.cb == NULL) { \
+		fatalError(); \
+	} \
+  return name##_mi.cb(p1); \
+}
+
+/*
+#define CREATE_MOCK_V1(funcName, p1Type) \
+typedef struct { \
+	MockInfo parent; \
+	void (*cb)(p1Type); \
+} MockInfo_##funcName; \
+MockInfo_##funcName funcName##_mi = {.parent.next = NULL, .parent.nbCallsTarget = 0, .parent.nbCalls = 0, .parent.funcName = "", .cb = NULL}; \
+  void funcName(p1Type p1) { \
+	funcName##_mi.parent.nbCalls++; \
+	if (funcName##_mi.cb) { \
+		funcName##_mi.cb(p1); \
+	} \
 }
 
 
@@ -94,32 +164,12 @@ typedef struct { \
 	retType (*cb)(p1Type); \
 } MockInfo_##funcName; \
 MockInfo_##funcName funcName##_mi = {.parent.next = NULL, .parent.nbCallsTarget = 0, .parent.nbCalls = 0, .parent.funcName = "", .cb = NULL}; \
-retType funcName(p1Type p1) { \
+  retType funcName(p1Type p1) { \
 	funcName##_mi.parent.nbCalls++; \
 	if (funcName##_mi.cb) { \
 		return funcName##_mi.cb(p1); \
 	} \
 }
-
-
-#define CALLING_INDEX(funNameUnderTest)  (funNameUnderTest##_mi.parent.nbCalls - 1)
-
-
-#define SUB(funNameUnderTest, funNameSubstitue, _nbCalls) \
-	MockInfo_addToList((MockInfo *)funNameUnderTest##_mi); \
-	funNameUnderTest##_mi.cd = funNameSubstitue; \
-	funNameUnderTest##_mi.parent.nbCallsTarget = _nbCalls; \
-	funNameUnderTest##_mi.parent.funcName = #funNameSubstitue;
-
-
-#define TEST(testName) \
-void test_##testName() { \
-	MockInfo_initList();
-  
-  
-#define END_TEST MockInfo_testList(__LINE__); }
-
-
-#define RUN_TEST(testName) test_##testName()
+*/
 
 #endif
