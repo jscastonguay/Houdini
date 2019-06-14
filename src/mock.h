@@ -115,6 +115,22 @@ static void test_##testName() { \
 #define RUN_TEST(testName) test_##testName()
 
 
+/* It is not a problem if the SUB macro set the substitution function to NULL
+   since no parameter nor return value is expected. */
+#define CREATE_MOCK_V0(name) \
+typedef struct { \
+	MockInfo parent; \
+	void (*cb)(); \
+} MockInfo_##name; \
+MockInfo_##name name##_mi = {.parent.next = NULL, .parent.nbCallsTarget = 0, .parent.nbCalls = 0, .parent.funcName = "", .cb = NULL}; \
+void name() { \
+	name##_mi.parent.nbCalls++; \
+	if (name##_mi.cb != NULL) { \
+		name##_mi.cb(); \
+	} \
+}
+
+
 #define CREATE_MOCK_0(retType, name) \
 typedef struct { \
 	MockInfo parent; \
@@ -136,7 +152,7 @@ retType name() { \
 #define CREATE_MOCK_1(retType, name, p1Type) \
 typedef struct { \
 	MockInfo parent; \
-	retType (*cb)(); \
+	retType (*cb)(p1Type); \
 } MockInfo_##name; \
 retType name##_notUsed; \
 MockInfo_##name name##_mi = {.parent.next = NULL, .parent.nbCallsTarget = 0, .parent.nbCalls = 0, .parent.funcName = "", .cb = NULL}; \

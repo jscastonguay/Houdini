@@ -65,11 +65,22 @@ END_TEST
 
 /******************************************************************************/
 
+CREATE_MOCK_V0(initSensor);
+
+TEST(initAllSensors_without_function_sub)
+	SUB(initSensor, NULL, 1);
+	initAllSensors();
+END_TEST
+
+/******************************************************************************/
+
 int main() {
 	
 	RUN_TEST(application_init);
 	RUN_TEST(getTemperature_with_temp_25_C);
 	RUN_TEST(configureSensors_withGoodGain);
 	RUN_TEST(configureSensors_withWrongGain);
+	RUN_TEST(initAllSensors_without_function_sub);
+	
 	return 0;
 }

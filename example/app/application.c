@@ -35,3 +35,7 @@ void configureSensors() {
 		state = ERROR;
 	}
 }
+
+void initAllSensors() {
+	initSensor();
+}

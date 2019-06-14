@@ -3,6 +3,3 @@ Easiest unit testing and mocking framework for C language, especially for embedd
 
 IN DEVELOPMENT
 
-## TODO
-- Setup and teardown
-- Automated test runner
