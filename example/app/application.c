@@ -1,41 +1,33 @@
-#include "sensors.h"
+#include <stdbool.h>
+#include "adc.h"
 
-#define NB_MEASURENETS_MAX  10
-
-typedef enum {
-	IDLE,
-	RUNNING,
-	ERROR
-} State;
-
-int measures[NB_MEASURENETS_MAX];
-int currentTemp;
-State state = IDLE;
+int temperature = 0;
 
 int application_init() {
-	for (unsigned int i = 0; i < NB_MEASURENETS_MAX; i++) {
-		measures[i] = 0;
-	}
-	currentTemp = 0;
-	state = IDLE;
-	
-	return 0;
+  int status;
+
+  ADC_init();
+  if (ADC_getStatus() == ADC_OK) {
+    status = 0;
+  } else {
+    status = 1;
+  }
+
+  return status;
 }
 
+void application_computeTemperature() {
+  int sum = 0;
+  for (int i = 0; i < 5; i++) {
+    sum += ADC_getRawValue(2);
+  }
 
-static int getTemperature() {
-	int voltage = getVoltage();
-	return voltage / 100;
+  int average = sum / 5;
+  temperature = average / 10;
 }
 
-void configureSensors() {
-	if (setGain(5) == 0) {
-		state = RUNNING;
-	} else {
-		state = ERROR;
-	}
-}
-
-void initAllSensors() {
-	initSensor();
+bool application_verifyConfig() {
+  ADC_Config config;
+  ADC_getConfig(&config);
+  return (config.nbBits == 10) && (config.nbChannels == 4);
 }

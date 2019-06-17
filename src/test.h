@@ -27,16 +27,20 @@ SOFTWARE.
 
 #include <stdio.h>
 
-// Prefix added to each ERROR or warning messages. Useful to separate test names and
-// an error/warning generated and print out to the console.
+//Prefix added to each ERROR or warning messages. Useful to separate test names from
+// errors/warnings printed to the console.
 #define PREFIX  "   "
 
-// Can be redefined in your system if required. mock.h uses PRINT macro
-// but without variable arguments. You can redefine it as simple as a "write
-// string" function. However, mock.h uses PRINT_INT.
+// Can be redefined for your system if required. mock.h uses 
+//    - PRINT macro but without variable arguments. You can redefine it as
+//      simple as a "write string" function.
+//    - PRINT_INT to print line numbers.
+//    - FLUSH in some circumstances when it is important to make sure that
+//      the error message is outputted before the next line of code.
 #define PRINT(text) printf(text)
 #define PRINT_INT(nb) printf("%d", nb);
 #define FLUSH() fflush(NULL);
+
 #define ASSERT(test) if (!(test)) { PRINT(PREFIX "ERROR ("); PRINT(#test); PRINT(") in "); PRINT(__FILE__); PRINT(" at line "); PRINT_INT(__LINE__); PRINT("\n\r"); }
 
 #endif

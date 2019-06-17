@@ -1,86 +1,81 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../../src/mock.h"
 #include "../../example/app/application.c"
+#include "../../src/houdini.h"
 
 /******************************************************************************/
 
-TEST(application_init)
+CREATE_MOCK_V0(ADC_init);
+CREATE_MOCK_0(ADC_Status, ADC_getStatus);
 
-	for (unsigned int i = 0; i < NB_MEASURENETS_MAX; i++) {
-		measures[i] = -1;
-	}
-	currentTemp = -1;
-	
-	application_init();
-	
-	ASSERT(currentTemp == 0);
-	ASSERT(state == IDLE);
-	
+void ADC_init_1() {}
+ADC_Status ADC_getStatus_OK() { return ADC_OK; }
+
+TEST(application_init_ADCStatusOK)
+
+	SUB(ADC_init, ADC_init_1, 1);
+	SUB(ADC_getStatus, ADC_getStatus_OK, 1);
+
+	int result = application_init();
+
+	ASSERT(result == 0);
+
 END_TEST
 
 /******************************************************************************/
 
-CREATE_MOCK_0(int, getVoltage);
+ADC_Status ADC_getStatus_ERROR() { return ADC_ERROR; }
 
-int getVoltage_return_2500() {
-	return 2500;
+TEST(application_init_ADCStatusERROR)
+
+	SUB(ADC_init, ADC_init_1, 1);
+	SUB(ADC_getStatus, ADC_getStatus_ERROR, 1);
+
+	int result = application_init();
+
+	ASSERT(result == 1);
+
+END_TEST
+
+/******************************************************************************/
+
+CREATE_MOCK_1(int, ADC_getRawValue, int);
+
+int ADC_getRawValue_1(int ch) {
+  int retValues[] = {100, 200, 300, 400, 500};
+  ASSERT(ch == 2);
+  unsigned int i = CALLING_INDEX(ADC_getRawValue);
+  return retValues[i];
 }
 
-TEST(getTemperature_with_temp_25_C)
-
-	SUB(getVoltage, getVoltage_return_2500, 1);
-	ASSERT(getTemperature() == 25);
-	
+TEST(application_computeTemperature)
+	SUB(ADC_getRawValue, ADC_getRawValue_1, 5);
+	application_computeTemperature();
+	ASSERT(temperature == 30);
 END_TEST
 
 /******************************************************************************/
 
-CREATE_MOCK_1(int, setGain, int);
+CREATE_MOCK_V1(ADC_getConfig, ADC_Config *);
 
-int setGain_sub1(int x) {
-	ASSERT(x == 5);
-	return 0;
+void ADC_getConfig_returnTrue(ADC_Config *config) {
+  config->nbChannels = 4;
+  config->nbBits = 10;
 }
 
-TEST(configureSensors_withGoodGain)
-	SUB(setGain, setGain_sub1, 1);
-	configureSensors();
-	ASSERT(state == RUNNING);
-END_TEST
-
-/******************************************************************************/
-
-int setGain_sub2(int x) {
-	ASSERT(x == 5);
-	return 1;
-}
-
-TEST(configureSensors_withWrongGain)
-	SUB(setGain, setGain_sub2, 1);
-	configureSensors();
-	ASSERT(state == ERROR);
-END_TEST
-
-/******************************************************************************/
-
-CREATE_MOCK_V0(initSensor);
-
-TEST(initAllSensors_without_function_sub)
-	SUB(initSensor, NULL, 1);
-	initAllSensors();
+TEST(application_verifyConfig)
+	SUB(ADC_getConfig, ADC_getConfig_returnTrue, 1);
+	ASSERT(application_verifyConfig() == true);
 END_TEST
 
 /******************************************************************************/
 
 int main() {
-	
-	RUN_TEST(application_init);
-	RUN_TEST(getTemperature_with_temp_25_C);
-	RUN_TEST(configureSensors_withGoodGain);
-	RUN_TEST(configureSensors_withWrongGain);
-	RUN_TEST(initAllSensors_without_function_sub);
-	
-	return 0;
+  RUN_TEST(application_init_ADCStatusOK);
+  RUN_TEST(application_init_ADCStatusERROR);
+  RUN_TEST(application_computeTemperature);
+  RUN_TEST(application_verifyConfig);
+
+  return 0;
 }

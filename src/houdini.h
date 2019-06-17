@@ -27,6 +27,8 @@ SOFTWARE.
 
 #include "test.h"
 
+#define HOUDINI
+
 struct _MockInfo {
   int nbCalls;
   int nbCallsTarget;
