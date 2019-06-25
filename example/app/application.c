@@ -1,9 +1,13 @@
 #include <stdbool.h>
 #include "adc.h"
 
-int temperature = 0;
+static int temperature = -1;
 
-int application_init() {
+void Application_reset() {
+  temperature = -1;
+}
+
+int Application_init() {
   int status;
 
   ADC_init();
@@ -16,7 +20,7 @@ int application_init() {
   return status;
 }
 
-void application_computeTemperature() {
+void Application_computeTemperature() {
   int sum = 0;
   for (int i = 0; i < 5; i++) {
     sum += ADC_getRawValue(2);
@@ -26,7 +30,7 @@ void application_computeTemperature() {
   temperature = average / 10;
 }
 
-bool application_verifyConfig() {
+static bool verifyConfig() {
   ADC_Config config;
   ADC_getConfig(&config);
   return (config.nbBits == 10) && (config.nbChannels == 4);

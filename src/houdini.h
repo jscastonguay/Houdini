@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef MOCK_H
-#define MOCK_H
+#ifndef HOUDINI_H
+#define HOUDINI_H
 
 #include "test.h"
 

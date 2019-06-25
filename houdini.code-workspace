@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "docs"
+		},
+		{
+			"path": "test"
+		},
+		{
+			"path": "src"
+		},
+		{
+			"path": "example"
+		}
+	],
+	"settings": {}
+}
