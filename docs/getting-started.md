@@ -43,6 +43,8 @@ The test cases defined in *utest.c* test functions defined in *application.c* th
 
 ## Project setup
 
+Before going into the test file explanation, it is important to see the global project usage, first in a project definition (a makefile using GCC in our case) and then in the framework as is.
+
 ### In project definition (*makefile*)
 
 The test project must instruct the compiler with the path of the code under test and Houdini source code such way that the references are resolved. The example uses GCC tool chain but can be any type of development environment for any target. Here is the *Makefile* of the test project:
@@ -54,7 +56,7 @@ all:
 
 Note that it is important to add ``-Wall`` compiler option. Explanation later (TODO: dire que c'est si un test est défini TEST..ENDTEST mais pas ajouté au test runner).
 
-### In Houdini framework
+### In Houdini framework (*Houdini.h* and *test.h*)
 
 Houdini framework is made of two files: *Houdini.h* that is the implementation of the mock mechanism and *test.h* that defines the way used by Houdini to output the test results. *Houdini.h* is portable and should not be modified. *test.h* can be modified by the developers for their given development environments.  
 
@@ -66,6 +68,20 @@ Houdini framework is made of two files: *Houdini.h* that is the implementation o
 
 The release version of Houdini uses ``printf`` and ``fflush`` in *test.h*. If your development environment supports them, you can let *test.h* unchanged. However, modifying the definitions for a microcontroller (or another kind of output) should not be a challenge.
 
+## The shelled example
+
+This section presents almost all Houdini's macros:
+
+* CREATE_MOCK_x(...)
+* TEST(testName) ... END_TEST
+* SUB(funcName, subName, nbOfCalls)
+* ASSERT(test)
+* RUN_TEST(testName)
+* CALLING_INDEX(cutName)
+
+ The next section completes the presentation of the rest of Houdini's macros. Here is the *utest.c* example explained while using Houdini's macros:
+
+![alt text](./TestFile.png)
 
 ## General setup and teardown
 
@@ -150,10 +166,3 @@ int main() {
 }
 ```
 
-## Test
-
-
-
-Ceci est un test no. 2
-
-![alt text](./TestFile.png)

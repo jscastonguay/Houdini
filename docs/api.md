@@ -54,7 +54,7 @@ TEST(foo_thatReturnsOK)
 END_TEST
 ```
 
-Note that each test case must be ran by a ``RUN_TEST`` macro with ``testName`` as parameter.
+Note that each test case must be run by a ``RUN_TEST`` macro with ``testName`` as parameter.
 
 ## SUB(funcName, subName, nbOfCalls)
 
