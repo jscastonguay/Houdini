@@ -1,10 +1,12 @@
 # Houdini - A Unit Testing and Mocking Framework for C Language
 
-Houdini is a easy unit testing and mocking framework for **C language**, especially for **embedded systems**. It is implemented in only **two C header files** and does not required a complex scripting language or a complex environment.
+IN DEVELOPMENT !!!
+
+Houdini is a easy unit testing and mocking framework for **C language**, especially for **embedded systems**. It is implemented in only **two C header files** and does not required any complex scripting language or complex environment.
 
 > Everything is in C, no C++, no Python, no Ruby, just good old plain C, even for the mocking framework !!!
 
-Unit testing framework is the easy part: every C programmer can do it minimally with the standard `` assert() `` or the equivalent. The real challenge however is managing the dependencies with a mocking framework and this is our focus. Houdini is not perfect, there are other frameworks that are pretty good at mocking functions, that take less testing code. But often they use either C++ features and/or an external tool/language like python or ruby that make the glue between elements. This is where Houdini is special:
+Unit testing framework is the easy part: every C programmer can do it minimally with the standard `` assert() `` or the equivalent. The real challenge however is managing the dependencies with a mocking framework and this is our focus. Houdini is not perfect, there are other frameworks that are pretty good at mocking functions that take less testing code. But often they use either C++ features and/or an external tool/language like python or ruby that make the glue between elements. This is where Houdini is special:
 
 * Only two C header files;
 * only five marcos for the basic usage;
@@ -61,7 +63,7 @@ Houdini is easy to use. You only have to know how code in C and how to create an
 
 ### For using Houdini
 
-Clone or download Houdini. The Houdini source code is under *src* folder. The source code consists of two files *test.h* and *houdini.h*. Develop and build your test project using these two files.
+Clone or download Houdini. The Houdini source code is under *src* folder. The source code consists of two files: *test.h* and *houdini.h*. Develop and build your test project using these two files.
 
 ### For testing or execute the example of Houdini
 

@@ -1,5 +1,22 @@
 # Application Programming Interface (API)
 
+## Test Setup
+
+Parler des #include, de main, etc.
+
+A test project is made of test files (standard C source file). Each test file **includes** Houdini framework simply by ``#include "houdini.h"``. Then a test file **includes an application file (the code under test)** by doing ``#include "path/to/cut.c"``. This is a base principle behind Houdini: the test cases are within the same compiler "unit" than the code under test. Also, each test file must include a test runner function that may be a ``main`` function or another function depending on the strategy used for the test project (see TBD). The following source code shows the project setup in *utest.c* for the Houdini example:
+
+``` C
+#include "../../src/houdini.h"
+#include "../../example/app/application.c"
+
+int main() {
+  return 0;
+}
+```
+
+Aussi parler du projet "makefile" et autres.
+
 ## CREATE_MOCK_x(...)
 
 This macro creates the mock mechanism for a given function. **x** and the number of marco's parameters are variable and must be according to the return type and the parameter's definitions of the mock function. Use ``CREATE_MOCK_x`` only once per mock function per test file.
