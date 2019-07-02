@@ -42,5 +42,10 @@ SOFTWARE.
 #define FLUSH() fflush(NULL);
 
 #define ASSERT(test) if (!(test)) { PRINT(PREFIX "ERROR ("); PRINT(#test); PRINT(") in "); PRINT(__FILE__); PRINT(" at line "); PRINT_INT(__LINE__); PRINT("\n\r"); }
+#define ASSERT_EQ(x, y) if ((x) != (y)) { PRINT(PREFIX "ERROR (value is "); PRINT_INT(x); PRINT(", expected equal to "); PRINT_INT(y); PRINT(") in "); PRINT(__FILE__); PRINT(" at line "); PRINT_INT(__LINE__); PRINT("\n\r"); }
+#define ASSERT_LE(x, y) if ((x) > (y)) { PRINT(PREFIX "ERROR (value is "); PRINT_INT(x); PRINT(", expected least or equal to "); PRINT_INT(y); PRINT(") in "); PRINT(__FILE__); PRINT(" at line "); PRINT_INT(__LINE__); PRINT("\n\r"); }
+#define ASSERT_LT(x, y) if ((x) >= (y)) { PRINT(PREFIX "ERROR (value is "); PRINT_INT(x); PRINT(", expected least then "); PRINT_INT(y); PRINT(") in "); PRINT(__FILE__); PRINT(" at line "); PRINT_INT(__LINE__); PRINT("\n\r"); }
+#define ASSERT_GE(x, y) if ((x) < (y)) { PRINT(PREFIX "ERROR (value is "); PRINT_INT(x); PRINT(", expected greater or equal to "); PRINT_INT(y); PRINT(") in "); PRINT(__FILE__); PRINT(" at line "); PRINT_INT(__LINE__); PRINT("\n\r"); }
+#define ASSERT_GT(x, y) if ((x) <= (y)) { PRINT(PREFIX "ERROR (value is "); PRINT_INT(x); PRINT(", expected greater then "); PRINT_INT(y); PRINT(") in "); PRINT(__FILE__); PRINT(" at line "); PRINT_INT(__LINE__); PRINT("\n\r"); }
 
 #endif
