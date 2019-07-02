@@ -4,7 +4,7 @@ IN DEVELOPMENT !!!
 
 Houdini is an easy unit testing and mocking framework for **C language**, especially for **embedded systems**. It is implemented in only **two C header files** and does not required any complex scripting language or complex environment.
 
-> Everything is in C, no C++, no Python, no Ruby, just good old plain C, even for the mocking framework !!!
+> Everything is in C, no C++, no Python, no Ruby, just good old plain C, even for a mocking framework !!!
 
 Unit testing framework is the easy part: every C programmer can do it minimally with the standard `` assert() `` or the equivalent. The real challenge however is managing the dependencies with a mocking framework and this is our focus. Houdini is not perfect, there are other frameworks that are pretty good at mocking functions that take less testing code. But often they use either C++ features and/or an external tool/language like python or ruby that make the glue between elements. This is where Houdini is special:
 

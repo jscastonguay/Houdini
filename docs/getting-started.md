@@ -138,7 +138,7 @@ There are 2 project strategies that can be used depending mainly on the RAM avai
 
   ![alt text](./ProjectStrategy-SeveralProjects.png)
 
-  2. Each test file tests one production file but has another function (called test runner) where ``RUN_TEST`` macros are used. Then, another file implements the ``main`` that calls every test runner functions of every test files. To run all tests on a given production source code, only one test project is required.
+  2. Each test file tests one production file but has another function (that is not ``main`` but can be called test runner) where ``RUN_TEST`` macros are used. Then, another file implements the ``main`` that calls every test runner functions of every test files. To run all tests on a given production source code, only one test project is required.
    
   ![alt text](./ProjectStrategy-OneProjects.png)
 
@@ -146,9 +146,9 @@ There are 2 project strategies that can be used depending mainly on the RAM avai
 
 Here are some other details that are interesting to mention:
 
-* It is important to use the ``-Wall`` compiler option. With this option, if a test case is created while no corresponding ``RUN_TEST`` run the test case, a compiler warning is generated saying that a function has been created but not used.
+* It is important to use the ``-Wall`` compiler option. With this option, if a test case is created while no corresponding ``RUN_TEST`` runs the test case, a compiler warning is generated saying that a function has been created but not used.
   
-* When a test case is ran, the name of the test case is outputted in consol. If a test fails, ``ERROR`` following to the fle name and the line number are outputted after the test case name that generates this test error. If a compiler error occurred from the test file, the error description is not very well defined due to the Houdini implementation. Developers have to be comprehensive.
+* When a test case is ran, the name of the test case is outputted in the consol. If a test fails, ``ERROR`` following by the file name and the line number are outputted after the test case name that generates this test error. If a compiler error occurred from the test file, the error description is not very well defined due to the Houdini implementation. Developers have to be comprehensive.
   
 * *houdini.h* defines the name ``HOUDINI``. If *houdini.h* is included before the code under test in test file, the developers can use this definition within the code under test. This is useful among others when the code under test implements ``main`` function. A small compiler switch can be used for this case as follows:
 
@@ -160,36 +160,6 @@ int main() {
 #enif
 ```
 
-* Note that a ``CREATE_MOCK_x`` macro must be use for each dependency function of the code under test. This is not only important for the test file but it is also important to compile! So developers using in Test Driven Development (TDD) can use ``CREATE_MOCK_x`` all along test cases. However, developers who create test file after that the code under test is written must have all at the beginning of the test file, just the be able to compile.
+* Note that a ``CREATE_MOCK_x`` macro must be use for each dependency function of the code under test. This is not only important for the test file but it is also important to compile! So developers using in Test Driven Development (TDD) can use ``CREATE_MOCK_x`` all along test cases. However, developers who create test file after wrote all code under test must have all ``CREATE_MOCK_x`` at the beginning of the test file to be able to compile when they start to write test file.
 
-* Since the code under test is included within the test file, all static object are available, from static global variables to static functions. This side effect can be very useful.
-
-## Synthesis (on va en faire un vrai getting started)
-
-``` C
-// This is a test file.
-
-#include "path/to/houdini.h"   // Framework installation... Nothing more to do!
-#include "path/to/cut.c"       // IMPORTANT: the code under test.
-
-CREATE_MOCK_1(int, depFunc, float);  // Creates the mock mechanism for the function "depFunc".
-                                     // Done only once per function to mock and per test file.
-
-int depFunc_sub(float x) { ASSERT(x < 100.0); return 1; }  // Substitution function that will be 
-                                                           // called by the code under test instead.
-
-TEST(testName)                    // Starting point of the test case plus test case's name definition.
-
-	SUB(depFunc, depFunc_sub, 2);   // Substitution of "depFunc" by "depFunc_sub" and indication
-                                  // that the function will be called 2 times.
-
-	int result = cutFunc();         // Execution of the code under test
-	ASSERT(result == 0);            // and test of the results if required.
-END_TEST
-
-int main() {
-  RUN_TEST(testName);             // Run the given test case.
-  return 0;
-}
-```
-
+* Since the code under test is included within the test file, all static object are available for testing, from static global variables to static functions. This side effect can be very useful.
